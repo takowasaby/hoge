@@ -15,7 +15,7 @@ public class Ball2D : MonoBehaviour
         myRigitBody.velocity = new Vector2(-1.0f, 1.0f).normalized;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         foreach(Transform child in blockParent)
         {
@@ -30,15 +30,30 @@ public class Ball2D : MonoBehaviour
             float y2 = child.position.y;
             if ((x1_x0 * (x2 - x0) + y1_y0 * (y2 - y0)) - myMagnitude * distance <= 0.01f && myMagnitude >= distance)
             {
-                transform.position = child.position;
                 if (child.rotation.eulerAngles.z % 180 == 0)
                 {
-                    myRigitBody.velocity = new Vector2(myRigitBody.velocity.x, -myRigitBody.velocity.y);
+                    if (transform.position.y - child.position.y < 0)
+                    {
+                        myRigitBody.velocity = new Vector2(myRigitBody.velocity.x, -Mathf.Abs(myRigitBody.velocity.y));
+                    }
+                    else
+                    {
+                        myRigitBody.velocity = new Vector2(myRigitBody.velocity.x, Mathf.Abs(myRigitBody.velocity.y));
+                    }
                 }
                 if ((child.rotation.eulerAngles.z - 90) % 180 == 0)
                 {
-                    myRigitBody.velocity = new Vector2(-myRigitBody.velocity.x, myRigitBody.velocity.y);
+                    if (transform.position.x - child.position.x < 0)
+                    {
+                        myRigitBody.velocity = new Vector2(-Mathf.Abs(myRigitBody.velocity.x), myRigitBody.velocity.y);
+                    }
+                    else
+                    {
+                        myRigitBody.velocity = new Vector2(Mathf.Abs(myRigitBody.velocity.x), myRigitBody.velocity.y);
+                    }
                 }
+                transform.position = child.position;
+                transform.position = transform.position + (Vector3)myRigitBody.velocity * Time.deltaTime;
             }
         }
     }
